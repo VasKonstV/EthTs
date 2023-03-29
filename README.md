@@ -1,4 +1,4 @@
-#EthTs
+# EthTs
 
 ## Sample Hardhat Project
 
