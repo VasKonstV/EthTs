@@ -1,12 +1,10 @@
-import { task, types } from 'hardhat/config';
-import type { Demo } from '../typechain-types';
-import { Demo__factory } from '../typechain-types';
 import { ethers } from "hardhat";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 async function main() {
  const [account] = await ethers.getSigners();
- const demo = await ethers.getContract<Demo>('Demo', account);
+ 
+ const Demo = await ethers.getContractFactory('Demo', account);
+ const demo = Demo.attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
       
  const tx = await demo.pay(`Hello from ${account}`, {value: 3000});
  await tx.wait();

@@ -42,7 +42,8 @@ task('callme', 'Call demo function')
     .setAction(async (taskArgs, { ethers, getNamedAccounts }) => {
       const account = (await getNamedAccounts())[taskArgs.account];
 
-      const demo = await ethers.getContract<Demo>('Demo', account);
+      const Demo = await ethers.getContractFactory('Demo', account);
+      const demo = Demo.attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
       
       const tx = await demo.pay(`Hello from ${account}`, {value: taskArgs.value});
       await tx.wait();
@@ -50,4 +51,20 @@ task('callme', 'Call demo function')
       console.log(await demo.message());
       console.log((await ethers.provider.getBalance(demo.address)).toString());
   });
+
+  task('distribute', 'Distribute funds')
+  .addParam('addresses', 'Addresses to distribute to')
+  .setAction(async (taskArgs, { ethers }) => {
+    const Demo = await ethers.getContractFactory('Demo');
+    const demo = Demo.attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+
+    const addrs = taskArgs.addresses.split(',');
+
+    const tx = await demo.distribute(addrs);
+    await tx.wait();
+
+    await Promise.all(addrs.map(async (addr: string) => {
+      console.log((await ethers.provider.getBalance(addr)).toString());
+    }));
+  }); 
 
